@@ -7,20 +7,29 @@
     "engines": {
         "vscode": "^1.25.0"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Winnerhust/vscode-extension/tree/master/lookupreferences"
+    },
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:editor.printReferences"
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.sayHello",
-                "title": "Hello World"
-            }
-        ]
+        "commands": [{
+            "command": "editor.printReferences",
+            "title": "Show All References"
+        }],
+        "menus": {
+            "editor/context": [{
+                "command": "editor.printReferences",
+                "when": "editorHasReferenceProvider",
+                "group": "navigation@1.31"
+            }]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
