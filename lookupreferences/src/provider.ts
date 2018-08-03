@@ -6,6 +6,11 @@
 import * as vscode from 'vscode';
 import ReferencesDocument from './referencesDocument';
 
+enum LookupRangeOption{
+	InCurrentProcjet = 0,
+	InCurrentFile = 1
+}
+
 export default class Provider implements vscode.TextDocumentContentProvider, vscode.DocumentLinkProvider {
 
 	static scheme = 'references';
@@ -14,6 +19,8 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 	private _documents = new Map<string, ReferencesDocument>();
 	private _editorDecoration = vscode.window.createTextEditorDecorationType({ textDecoration: 'underline' });
 	private _subscriptions: vscode.Disposable;
+	private	_lookupOption:LookupRangeOption = LookupRangeOption.InCurrentProcjet;
+	private _lookupUri: vscode.Uri|undefined;
 
 	constructor() {
 
@@ -27,6 +34,22 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 		this._documents.clear();
 		this._editorDecoration.dispose();
 		this._onDidChange.dispose();
+	}
+
+	public getPreLink(): vscode.Location|undefined {
+		return undefined;
+	}
+	public getNextLink(): vscode.Location|undefined {
+		return undefined;
+	}
+
+	public setLookupRange(range:string, uri: vscode.Uri) {
+		if (range === "Current File"){
+			this._lookupOption=LookupRangeOption.InCurrentFile;
+			this._lookupUri=uri;
+		}else{
+			this._lookupOption=LookupRangeOption.InCurrentProcjet;
+		}
 	}
 
 	// Expose an event to signal changes of _virtual_ documents
@@ -56,10 +79,8 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 				return "";
 			}
 			// sort by locations and shuffle to begin from target resource
-			let idx = 0;
-			//@ts-ignore
-			locations.sort(Provider._compareLocations).find((loc, i) => loc.uri.toString() === target.toString() && (idx = i) && true);
-			locations.push(...locations.splice(0, idx));
+			locations = this._uniqLocations(locations);
+			locations.sort(Provider._compareLocations);
 
 			// create document and return its early state
 			let document = new ReferencesDocument(uri, locations, this._onDidChange);
@@ -76,6 +97,25 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 		} else {
 			return a.range.start.line - b.range.start.line;
 		}
+	}
+	private _uniqLocations(locations:vscode.Location[]):vscode.Location[]{
+		let locs:vscode.Location[] = [];
+		locations.forEach(a=>{
+			let hasRepeated = locs.some(b=>{
+				if (Provider._compareLocations(a,b)===0){
+					return true;
+				}
+				return false;
+			});
+			if (!hasRepeated){
+				if (this._lookupOption === LookupRangeOption.InCurrentProcjet){
+					locs.push(a);
+				}else if (this._lookupUri !== undefined && a.uri.fsPath === this._lookupUri.fsPath){
+					locs.push(a);
+				}
+			}
+		});
+		return locs;
 	}
 
 	provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.DocumentLink[] {

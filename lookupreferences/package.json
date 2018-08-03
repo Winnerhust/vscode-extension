@@ -22,12 +22,25 @@
         "commands": [{
             "command": "editor.printReferences",
             "title": "Show All References"
+        }, {
+            "command": "references.preLink",
+            "title": "Go to pre referece"
+        }, {
+            "command": "references.nextLink",
+            "title": "Go to next referece"
         }],
         "menus": {
             "editor/context": [{
                 "command": "editor.printReferences",
                 "when": "editorHasReferenceProvider",
                 "group": "navigation@1.31"
+            }],
+            "editor/title": [{
+                "command": "references.preLink",
+                "group": "navigation"
+            }, {
+                "command": "references.nextLink",
+                "group": "navigation"
             }]
         }
     },
