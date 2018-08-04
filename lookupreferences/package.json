@@ -15,34 +15,47 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:editor.printReferences"
+        "onCommand:references.showAll"
     ],
     "main": "./out/extension",
     "contributes": {
         "commands": [{
-            "command": "editor.printReferences",
-            "title": "Show All References"
+            "command": "references.showAll",
+            "title": "查看所有引用"
         }, {
-            "command": "references.preLink",
-            "title": "Go to pre referece"
+            "command": "references.pre",
+            "title": "查看上一个引用"
         }, {
-            "command": "references.nextLink",
-            "title": "Go to next referece"
+            "command": "references.next",
+            "title": "查看下一个引用"
         }],
         "menus": {
             "editor/context": [{
-                "command": "editor.printReferences",
+                "command": "references.showAll",
                 "when": "editorHasReferenceProvider",
-                "group": "navigation@1.31"
-            }],
-            "editor/title": [{
-                "command": "references.preLink",
-                "group": "navigation"
+                "group": "references@1"
             }, {
-                "command": "references.nextLink",
-                "group": "navigation"
+                "command": "references.pre",
+                "group": "references@2"
+            }, {
+                "command": "references.next",
+                "group": "references@3"
             }]
-        }
+        },
+        "keybindings": [{
+            "command": "references.showAll",
+            "key": "ctrl+win+/",
+            "mac": "ctrl+cmd+/"
+        }, {
+            "command": "references.pre",
+            "key": "ctrl+win+up",
+            "mac": "ctrl+cmd+up"
+        }, {
+            "command": "references.next",
+            "key": "ctrl+win+down",
+            "mac": "ctrl+cmd+down"
+        }]
+
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

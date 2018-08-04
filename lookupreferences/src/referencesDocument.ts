@@ -38,9 +38,14 @@ export default class ReferencesDocument {
 		return this._links;
 	}
 
+	get locations(){
+		return this._locations;
+	}
+
 	join(): Thenable<this> {
 		return this._join;
 	}
+	
 
 	private _populate() {
 
@@ -94,7 +99,7 @@ export default class ReferencesDocument {
 		// to not duplicate lines
 		return vscode.workspace.openTextDocument(uri).then(doc => {
 
-			this._lines.push('', uri.toString());
+			this._lines.push('', uri.fsPath);
 
 			for (let i = 0; i < ranges.length; i++) {
 				const {start: {line}} = ranges[i];

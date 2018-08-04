@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// register command that crafts an uri with the `references` scheme,
 	// open the dynamic document, and shows it in the next editor
-	const commandRegistration = vscode.commands.registerTextEditorCommand('editor.printReferences', editor => {
+	const commandRegistration = vscode.commands.registerTextEditorCommand('references.showAll', editor => {
 		const uri = encodeLocation(editor.document.uri, editor.selection.active);
 		let pos = editor.document.getWordRangeAtPosition(editor.selection.active);
 		let symbol = editor.document.getText(pos);
@@ -40,36 +40,26 @@ export function activate(context: vscode.ExtensionContext) {
 			provider.setLookupRange(item.label, editor.document.uri);
 			return vscode.workspace.openTextDocument(uri).then(doc => {
             	if(editor !== undefined && editor.viewColumn !== undefined){
-            	    vscode.window.showTextDocument(doc, editor.viewColumn + 1);
+            	    vscode.window.showTextDocument(doc, editor.viewColumn,false);
            	 }
         	});
 		});
 	});
-	const preLinkCmd= vscode.commands.registerCommand('references.preLink', editor => {
-		let loc = provider.getPreLink();
-		if (loc === undefined){
-			return;
-		}
-		return vscode.workspace.openTextDocument(loc.uri).then(doc=>{
-			vscode.window.showTextDocument(doc);
-		});
+	const preReferenceCmd= vscode.commands.registerCommand('references.pre', editor => {
+		let loc = provider.getPreReference();
+		provider.gotoLocation(loc);
 	});
-	const nextLinkCmd= vscode.commands.registerCommand('references.nextLink', editor => {
-		let loc = provider.getNextLink();
-		if (loc === undefined){
-			return;
-		}
-		return vscode.workspace.openTextDocument(loc.uri).then(doc=>{
-			vscode.window.showTextDocument(doc);
-		});
+	const nextReferenceCmd= vscode.commands.registerCommand('references.next', editor => {
+		let loc = provider.getNextReference();
+		provider.gotoLocation(loc);
 	});
 
 	context.subscriptions.push(
 		provider,
 		commandRegistration,
 		providerRegistrations,
-		preLinkCmd,
-		nextLinkCmd
+		preReferenceCmd,
+		nextReferenceCmd
 	);
 }
 

@@ -12,6 +12,7 @@ enum LookupRangeOption{
 }
 
 export default class Provider implements vscode.TextDocumentContentProvider, vscode.DocumentLinkProvider {
+	
 
 	static scheme = 'references';
 
@@ -21,7 +22,7 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 	private _subscriptions: vscode.Disposable;
 	private	_lookupOption:LookupRangeOption = LookupRangeOption.InCurrentProcjet;
 	private _lookupUri: vscode.Uri|undefined;
-
+	private _currPosIdx:number =-1;
 	constructor() {
 
 		// Listen to the `closeTextDocument`-event which means we must
@@ -36,13 +37,44 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 		this._onDidChange.dispose();
 	}
 
-	public getPreLink(): vscode.Location|undefined {
-		return undefined;
+	public getCurrReference():vscode.Location|undefined{
+		let docs = Array.from(this._documents.values());
+
+		if (docs.length === 0 || docs[0].locations.length === 0){
+			return undefined;
+		}
+		if(this._currPosIdx < 0){
+			this._currPosIdx = 0;
+			return docs[0].locations[0];
+		}
+
+		if (this._currPosIdx >= docs[0].locations.length){
+			this._currPosIdx = docs[0].locations.length;
+			return docs[0].locations[-1];
+		}
+
+		return docs[0].locations[this._currPosIdx];
 	}
-	public getNextLink(): vscode.Location|undefined {
-		return undefined;
+	public getPreReference(): vscode.Location|undefined {
+		this._currPosIdx -=1;
+		return this.getCurrReference();
+	}
+	public getNextReference(): vscode.Location|undefined {
+		this._currPosIdx +=1;
+		return this.getCurrReference();
 	}
 
+	public gotoLocation(location:vscode.Location|undefined){
+		if (location === undefined){
+			return;
+		}
+
+		return vscode.workspace.openTextDocument(location.uri).then(doc =>{
+			vscode.window.showTextDocument(doc,undefined,false).then(editor=>{
+				editor.revealRange(location.range,vscode.TextEditorRevealType.InCenter);
+			});
+		});
+	}
 	public setLookupRange(range:string, uri: vscode.Uri) {
 		if (range === "Current File"){
 			this._lookupOption=LookupRangeOption.InCurrentFile;
@@ -80,10 +112,15 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 			}
 			// sort by locations and shuffle to begin from target resource
 			locations = this._uniqLocations(locations);
+			if (this._lookupOption === LookupRangeOption.InCurrentFile){
+				locations = this._filterLocations(locations, this._lookupUri);
+			}
+
 			locations.sort(Provider._compareLocations);
 
 			// create document and return its early state
 			let document = new ReferencesDocument(uri, locations, this._onDidChange);
+			this._documents.clear();
 			this._documents.set(uri.toString(), document);
 			return document.value;
 		});
@@ -116,6 +153,21 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 			}
 		});
 		return locs;
+	}
+	
+	private _filterLocations(locations: vscode.Location[], uri:vscode.Uri|undefined): vscode.Location[] {
+		let locs: vscode.Location[]=[];
+		if (uri === undefined){
+			return locations;
+		}
+
+		locations.forEach(loc=>{
+			if (loc.uri.fsPath === uri.fsPath){
+				locs.push(loc);
+			}
+		});
+
+		return locs; 
 	}
 
 	provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.DocumentLink[] {
