@@ -21,13 +21,17 @@
     "contributes": {
         "commands": [{
             "command": "references.showAll",
-            "title": "查看所有引用"
+            "title": "查看所有引用",
+            "category": "引用"
         }, {
             "command": "references.pre",
-            "title": "查看上一个引用"
+            "title": "查看上一个引用",
+            "category": "引用"
         }, {
             "command": "references.next",
-            "title": "查看下一个引用"
+            "title": "查看下一个引用",
+            "category": "引用"
+
         }],
         "menus": {
             "editor/context": [{

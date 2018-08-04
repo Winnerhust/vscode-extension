@@ -4,6 +4,9 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as path from 'path';
+
+// var path=require('path');
 
 export default class ReferencesDocument {
 
@@ -98,54 +101,29 @@ export default class ReferencesDocument {
 		// with leading and trailing content form the document. Make sure
 		// to not duplicate lines
 		return vscode.workspace.openTextDocument(uri).then(doc => {
-
-			this._lines.push('', uri.fsPath);
-
 			for (let i = 0; i < ranges.length; i++) {
 				const {start: {line}} = ranges[i];
-				this._appendLeading(doc, line, ranges[i - 1]);
 				this._appendMatch(doc, line, ranges[i], uri);
-				this._appendTrailing(doc, line, ranges[i + 1]);
 			}
-
 		}, err => {
 			this._lines.push('', `Failed to load '${uri.toString()}'\n\n${String(err)}`, '');
 		});
 	}
 
-	private _appendLeading(doc: vscode.TextDocument, line: number, previous: vscode.Range): void {
-		let from = Math.max(0, line - 3, previous && previous.end.line || 0);
-		while (++from < line) {
-			const text = doc.lineAt(from).text;
-			this._lines.push(`  ${from + 1}` + (text && `  ${text}`));
-		}
-	}
-
 	private _appendMatch(doc: vscode.TextDocument, line: number, match: vscode.Range, target: vscode.Uri) {
-		const text = doc.lineAt(line).text;
-		const preamble = `  ${line + 1}: `;
+		let baseName=path.basename(target.fsPath);
+		let dirName=path.dirname(target.fsPath);
+		let relativePath=vscode.workspace.asRelativePath(dirName); 
+		const lineHeader = `${baseName}:${line+1}(${relativePath}):`;
 
+		const text = doc.lineAt(line).text;
 		// Append line, use new length of lines-array as line number
 		// for a link that point to the reference
-		const len = this._lines.push(preamble + text);
+		const len = this._lines.push(lineHeader + text);
 
 		// Create a document link that will reveal the reference
-		const linkRange = new vscode.Range(len - 1, preamble.length + match.start.character, len - 1, preamble.length + match.end.character);
+		const linkRange = new vscode.Range(len - 1, lineHeader.length + match.start.character, len - 1, lineHeader.length + match.end.character);
 		const linkTarget = target.with({ fragment: String(1 + match.start.line) });
 		this._links.push(new vscode.DocumentLink(linkRange, linkTarget));
-	}
-
-	private _appendTrailing(doc: vscode.TextDocument, line: number, next: vscode.Range): void {
-		let to = Math.min(doc.lineCount, line + 3);
-		if (next && next.start.line - to <= 2) {
-			return; // next is too close, _appendLeading does the work
-		}
-		while (++line < to) {
-			const text = doc.lineAt(line).text;
-			this._lines.push(`  ${line + 1}` + (text && `  ${text}`));
-		}
-		if (next) {
-			this._lines.push(`  ...`);
-		}
 	}
 }
