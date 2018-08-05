@@ -1,0 +1,49 @@
+{
+    "name": "autoincludecpp",
+    "displayName": "autoincludecpp",
+    "description": "auto include header file for c/c++",
+    "version": "0.0.1",
+    "publisher": "WinnerHust",
+    "engines": {
+        "vscode": "^1.25.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:c",
+        "onLanguage:cpp"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [{
+            "command": "autoIncludeHeadFile.run",
+            "title": "自动添加头文件",
+            "category": "Other"
+        }],
+        "menus": {
+            "editor/context": [{
+                "command": "autoIncludeHeadFile.run",
+                "group": "autoIncludeHeadFile"
+            }]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "tslint": "^5.8.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "child-process-promise": "^2.2.1",
+        "iconv-lite": "^0.4.23"
+    }
+}
