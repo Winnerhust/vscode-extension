@@ -1,7 +1,6 @@
 var exec = require('child-process-promise').exec;
 var iconv = require('iconv-lite');
 import * as vscode from 'vscode';
-import { toUnicode } from 'punycode';
 
 function execute(command: string): Promise<Buffer> {
     var configuration = vscode.workspace.getConfiguration('codegnuglobal');

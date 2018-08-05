@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { Global, GlobalResult } from '../global';
-import { globalAgent } from 'https';
 
 /**
  * 1. 工程启动时初始化gtags
