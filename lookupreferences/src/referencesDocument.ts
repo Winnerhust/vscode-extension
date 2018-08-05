@@ -90,7 +90,7 @@ export default class ReferencesDocument {
 					this._emitter.fire(this._uri);
 					next();
 				});
-			}
+			};
 			next();
 		});
 	}

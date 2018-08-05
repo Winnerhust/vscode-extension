@@ -19,6 +19,18 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "lookup references confituration",
+            "properties": {
+                "references.showIconInEditorTitleMenu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "是否在标题栏菜单显示查看上一个引用和下一个引用图标",
+                    "scope": "windows"
+                }
+            }
+        },
         "commands": [{
             "command": "references.showAll",
             "title": "查看所有引用",
@@ -26,11 +38,19 @@
         }, {
             "command": "references.pre",
             "title": "查看上一个引用",
-            "category": "引用"
+            "category": "引用",
+            "icon": {
+                "light": "./img/pre_light.png",
+                "dark": "./img/pre_dark.png"
+            }
         }, {
             "command": "references.next",
             "title": "查看下一个引用",
-            "category": "引用"
+            "category": "引用",
+            "icon": {
+                "dark": "./img/next_dark.png",
+                "light": "./img/next_light.png"
+            }
 
         }],
         "menus": {
@@ -44,6 +64,15 @@
             }, {
                 "command": "references.next",
                 "group": "references@3"
+            }],
+            "editor/title": [{
+                "when": "config.references.showIconInEditorTitleMenu",
+                "command": "references.pre",
+                "group": "navigation"
+            }, {
+                "when": "config.references.showIconInEditorTitleMenu",
+                "command": "references.next",
+                "group": "navigation"
             }]
         },
         "keybindings": [{
