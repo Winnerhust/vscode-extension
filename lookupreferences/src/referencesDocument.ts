@@ -114,15 +114,17 @@ export default class ReferencesDocument {
 		let baseName=path.basename(target.fsPath);
 		let dirName=path.dirname(target.fsPath);
 		let relativePath=vscode.workspace.asRelativePath(dirName); 
-		const lineHeader = `${baseName}:${line+1}(${relativePath}):`;
+		const lineHeader = `${baseName}:${line+1}(${relativePath}): `;
 
 		const text = doc.lineAt(line).text;
+		const leftSpaceLen=text.indexOf(text.trim()[0]);
+
 		// Append line, use new length of lines-array as line number
 		// for a link that point to the reference
-		const len = this._lines.push(lineHeader + text);
+		const len = this._lines.push(lineHeader + text.trim());
 
 		// Create a document link that will reveal the reference
-		const linkRange = new vscode.Range(len - 1, lineHeader.length + match.start.character, len - 1, lineHeader.length + match.end.character);
+		const linkRange = new vscode.Range(len - 1, lineHeader.length + match.start.character - leftSpaceLen, len - 1, lineHeader.length + match.end.character- leftSpaceLen);
 		const linkTarget = target.with({ fragment: String(1 + match.start.line) });
 		this._links.push(new vscode.DocumentLink(linkRange, linkTarget));
 	}
