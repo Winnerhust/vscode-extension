@@ -26,6 +26,17 @@
                 "command": "autoIncludeHeadFile.run",
                 "group": "autoIncludeHeadFile"
             }]
+        },
+        "configuration": {
+            "title": "code helper config",
+            "properties": {
+                "codehelper.encoding": {
+                    "type": "string",
+                    "default": "utf8",
+                    "title": "",
+                    "description": "code helper encoding"
+                }
+            }
         }
     },
     "scripts": {

@@ -28,7 +28,6 @@ export default class GlobalCodeActionsProvider implements vscode.CodeActionProvi
 		let diag: undefined|vscode.Diagnostic = undefined;
 		context.diagnostics.some(item => {
 			if (item.message.includes("undefined") || item.message.includes("找不到")){
-				console.log(item.message,item.tags);
 				diag = item;
 				return true;
 			}
@@ -101,8 +100,6 @@ export default class GlobalCodeActionsProvider implements vscode.CodeActionProvi
 				return "";
 			}
 
-			console.log(item);
-
 			fixText=this._formatIncludeStmt(item); 
 		});
 
@@ -122,7 +119,6 @@ export default class GlobalCodeActionsProvider implements vscode.CodeActionProvi
 	private	_collectPaths (output: Buffer, includePaths:string[]) {
 		let self = this;
 		if (output !== null && output.toString() !== "") {
-			console.log(output);
 			let bucket = new Set<string>();
 			output.toString().split(/\r?\n/)
 				.forEach(function (value, index, array) {

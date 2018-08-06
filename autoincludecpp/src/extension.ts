@@ -20,7 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.languages.registerCodeActionsProvider(['c','cpp'], provider));
 
     const autoincludeHeadFileCmd=vscode.commands.registerTextEditorCommand("autoIncludeHeadFile.run",editor=>{
-        console.log(editor.document.uri);
         provider.autoIncludeHeadFile(editor.document, editor.selection);
     });
 
