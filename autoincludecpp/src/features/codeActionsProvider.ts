@@ -18,7 +18,7 @@ import { Global, GlobalResult } from '../global';
  * 3. 执行命令插入头文件语句
  */
 
-export default class GlobalAddHeadFileProvider implements vscode.CodeActionProvider{
+export default class GlobalCodeActionsProvider implements vscode.CodeActionProvider{
 	private _global: Global;
 	constructor(global:Global){
 		this._global = global;

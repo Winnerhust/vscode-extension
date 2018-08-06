@@ -57,13 +57,27 @@ export class GlobalResult{
             if (path !== undefined){
                 this.path = path.replace("%20", " ");
             }
-
             this.info = values.join(' ');
+            this.kind = GlobalResult.parseKind(this.info);
             this.valid = true;
         } catch (ex) {
             console.error("Error: " + ex);
         }
         return;
+    }
+    private static parseKind(info: string): vscode.SymbolKind {
+        var kind = vscode.SymbolKind.Variable;
+
+        if (info.startsWith('class ')) {
+            kind = vscode.SymbolKind.Class;
+        } else if (info.startsWith('struct ')) {
+            kind = vscode.SymbolKind.Class;
+        } else if (info.startsWith('enum ')) {
+            kind = vscode.SymbolKind.Enum;
+        } else if (info.indexOf('(') !== -1) {
+            kind = vscode.SymbolKind.Function;
+        }
+        return kind;
     }
 }
 
@@ -85,21 +99,6 @@ export class Global {
 
     parseLine(content: string): GlobalResult{
         return new GlobalResult(content);
-    }
-
-    private parseKind(info: string): vscode.SymbolKind {
-        var kind = vscode.SymbolKind.Variable;
-
-        if (info.startsWith('class ')) {
-            kind = vscode.SymbolKind.Class;
-        } else if (info.startsWith('struct ')) {
-            kind = vscode.SymbolKind.Class;
-        } else if (info.startsWith('enum ')) {
-            kind = vscode.SymbolKind.Enum;
-        } else if (info.indexOf('(') !== -1) {
-            kind = vscode.SymbolKind.Function;
-        }
-        return kind;
     }
 
     constructor(exec: string) {

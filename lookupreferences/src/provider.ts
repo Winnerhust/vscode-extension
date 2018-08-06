@@ -49,7 +49,7 @@ export default class Provider implements vscode.TextDocumentContentProvider, vsc
 		}
 
 		if (this._currPosIdx >= docs[0].locations.length){
-			this._currPosIdx = docs[0].locations.length;
+			this._currPosIdx = docs[0].locations.length-1;
 			return docs[0].locations[-1];
 		}
 
