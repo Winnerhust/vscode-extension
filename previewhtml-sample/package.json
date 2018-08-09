@@ -30,21 +30,26 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [{
-            "command": "callgraph.previewcalled",
-            "title": "CallGraph Preview",
-            "category": "CallGraph"
-        }],
+        "commands": [
+            {
+                "command": "callgraph.previewcalled",
+                "title": "CallGraph Preview",
+                "category": "CallGraph"
+            }
+        ],
         "menus": {
-            "editor/context": [{
-                "command": "callgraph.previewcalled",
-                "when": "editorLangId == c",
-                "group": "navigation"
-            }, {
-                "command": "callgraph.previewcalled",
-                "when": "editorLangId == cpp",
-                "group": "navigation"
-            }]
+            "editor/context": [
+                {
+                    "command": "callgraph.previewcalled",
+                    "when": "editorLangId == c",
+                    "group": "navigation"
+                },
+                {
+                    "command": "callgraph.previewcalled",
+                    "when": "editorLangId == cpp",
+                    "group": "navigation"
+                }
+            ]
         }
     },
     "scripts": {
@@ -57,5 +62,9 @@
         "@types/node": "^10.5.7",
         "typescript": "^2.1.4",
         "vscode": "^1.1.18"
+    },
+    "dependencies": {
+        "child-process-promise": "^2.2.1",
+        "iconv-lite": "^0.4.23"
     }
 }
